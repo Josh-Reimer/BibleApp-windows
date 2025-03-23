@@ -7,6 +7,7 @@ import list_and_str_ops as list
 from BibleFileNames import files
 from charEliminator import onlyVerses, remove_only_chars
 
+bible_text_files = ["genesis.txt", "exodus.txt", "leviticus.txt", "numbers.txt", "deuteronomy.txt", "joshua.txt", "judges.txt", "ruth.txt", "first_samuel.txt", "second_samuel.txt", "first_kings.txt", "second_kings.txt", "first_chronicles.txt", "second_chronicles.txt", "ezra.txt", "nehemiah.txt", "esther.txt", "job.txt", "psalms.txt", "proverbs.txt", "eccliasiastes.txt", "song_of_solomon.txt", "isaiah.txt", "jeremiah.txt", "lamentations.txt", "ezekial.txt", "daniel.txt", "hosea.txt", "joel.txt", "amos.txt", "obadiah.txt", "jonah.txt", "micah.txt", "nahum.txt", "habakkuk.txt", "zephaniah.txt", "haggai.txt", "zechariah.txt", "malachi.txt", "matthew.txt", "mark.txt", "luke.txt", "john.txt", "acts.txt", "romans.txt", "first_corinthians.txt", "second_corinthians.txt", "galatians.txt", "ephesians.txt", "philipians.txt", "colossians.txt", "first_thesselonians.txt", "second_thesselonians.txt", "first_timothy.txt", "second_timothy.txt", "titus.txt", "philemon.txt", "hebrews.txt", "james.txt", "first_peter.txt", "second_peter.txt", "first_john.txt", "second_john.txt", "third_john.txt", "jude.txt", "revelation.txt"]
 
 class BibleApp(QWidget):
     def __init__(self):
@@ -27,15 +28,23 @@ class BibleApp(QWidget):
         # Create the label, text input field, and buttons
         lbl = QLabel('Enter search keywords: ')
         self.search_input = QLineEdit(self)
+        
+        # Create the "Home" button
+        home_btn = QPushButton('HOME', self)
+        home_btn.clicked.connect(self.on_home)
+        
         search_btn = QPushButton('SEARCH', self)
         search_btn.clicked.connect(self.on_search)
+        
         clear_btn = QPushButton('Clear', self)
         clear_btn.clicked.connect(self.on_clear)
 
         # Add widgets to the horizontal layout
+        
         hbox.addWidget(lbl)
         hbox.addWidget(self.search_input)
         hbox.addWidget(search_btn)
+        hbox.addWidget(home_btn)  # Home button goes first
         hbox.addWidget(clear_btn)
 
         # Add the horizontal layout to the vertical layout
@@ -45,6 +54,14 @@ class BibleApp(QWidget):
         self.result_area = QTextEdit(self)
         self.result_area.setReadOnly(True)
         vbox.addWidget(self.result_area)
+
+        try:
+            with open("genesis.txt", "r") as f:
+                genesis_content = f.read()
+            self.result_area.setText(genesis_content)  # Display content of genesis.txt
+        except FileNotFoundError:
+            self.result_area.setText("Genesis file not found.")
+
 
         # Set the main layout for the window
         self.setLayout(vbox)
@@ -59,6 +76,16 @@ class BibleApp(QWidget):
         """Handle clear button click."""
         self.search_input.clear()
         self.result_area.clear()
+
+    def on_home(self):
+        """Handle home button click, show Genesis content and clear search input."""
+        self.search_input.clear()  # Clear the search input
+        try:
+            with open("genesis.txt", "r") as f:
+                genesis_content = f.read()
+            self.result_area.setText(genesis_content)  # Display content of genesis.txt
+        except FileNotFoundError:
+            self.result_area.setText("Genesis file not found.")
 
     def linear_search(self, searchkey):
         """Perform a linear search for verses containing the search keyword."""

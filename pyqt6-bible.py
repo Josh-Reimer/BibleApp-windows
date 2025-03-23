@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QComboBox
 from PyQt6.QtCore import Qt
 import pyperclip
 import ChapterVerse as CV
@@ -7,7 +7,18 @@ import list_and_str_ops as list
 from BibleFileNames import files
 from charEliminator import onlyVerses, remove_only_chars
 
-bible_text_files = ["genesis.txt", "exodus.txt", "leviticus.txt", "numbers.txt", "deuteronomy.txt", "joshua.txt", "judges.txt", "ruth.txt", "first_samuel.txt", "second_samuel.txt", "first_kings.txt", "second_kings.txt", "first_chronicles.txt", "second_chronicles.txt", "ezra.txt", "nehemiah.txt", "esther.txt", "job.txt", "psalms.txt", "proverbs.txt", "eccliasiastes.txt", "song_of_solomon.txt", "isaiah.txt", "jeremiah.txt", "lamentations.txt", "ezekial.txt", "daniel.txt", "hosea.txt", "joel.txt", "amos.txt", "obadiah.txt", "jonah.txt", "micah.txt", "nahum.txt", "habakkuk.txt", "zephaniah.txt", "haggai.txt", "zechariah.txt", "malachi.txt", "matthew.txt", "mark.txt", "luke.txt", "john.txt", "acts.txt", "romans.txt", "first_corinthians.txt", "second_corinthians.txt", "galatians.txt", "ephesians.txt", "philipians.txt", "colossians.txt", "first_thesselonians.txt", "second_thesselonians.txt", "first_timothy.txt", "second_timothy.txt", "titus.txt", "philemon.txt", "hebrews.txt", "james.txt", "first_peter.txt", "second_peter.txt", "first_john.txt", "second_john.txt", "third_john.txt", "jude.txt", "revelation.txt"]
+# Define the list of Bible text files
+bible_text_files = ["genesis.txt", "exodus.txt", "leviticus.txt", "numbers.txt", "deuteronomy.txt", "joshua.txt", 
+                    "judges.txt", "ruth.txt", "first_samuel.txt", "second_samuel.txt", "first_kings.txt", "second_kings.txt", 
+                    "first_chronicles.txt", "second_chronicles.txt", "ezra.txt", "nehemiah.txt", "esther.txt", "job.txt", 
+                    "psalms.txt", "proverbs.txt", "eccliasiastes.txt", "song_of_solomon.txt", "isaiah.txt", "jeremiah.txt", 
+                    "lamentations.txt", "ezekial.txt", "daniel.txt", "hosea.txt", "joel.txt", "amos.txt", "obadiah.txt", 
+                    "jonah.txt", "micah.txt", "nahum.txt", "habakkuk.txt", "zephaniah.txt", "haggai.txt", "zechariah.txt", 
+                    "malachi.txt", "matthew.txt", "mark.txt", "luke.txt", "john.txt", "acts.txt", "romans.txt", 
+                    "first_corinthians.txt", "second_corinthians.txt", "galatians.txt", "ephesians.txt", "philipians.txt", 
+                    "colossians.txt", "first_thesselonians.txt", "second_thesselonians.txt", "first_timothy.txt", 
+                    "second_timothy.txt", "titus.txt", "philemon.txt", "hebrews.txt", "james.txt", "first_peter.txt", 
+                    "second_peter.txt", "first_john.txt", "second_john.txt", "third_john.txt", "jude.txt", "revelation.txt"]
 
 class BibleApp(QWidget):
     def __init__(self):
@@ -39,13 +50,18 @@ class BibleApp(QWidget):
         clear_btn = QPushButton('Clear', self)
         clear_btn.clicked.connect(self.on_clear)
 
-        # Add widgets to the horizontal layout
+        # Create the ComboBox for book selection
+        self.book_combo_box = QComboBox(self)
+        self.populate_combo_box()  # Populate the ComboBox with formatted book names
+        self.book_combo_box.currentIndexChanged.connect(self.on_book_select)  # Connect to selection handler
         
+        # Add widgets to the horizontal layout
         hbox.addWidget(lbl)
         hbox.addWidget(self.search_input)
         hbox.addWidget(search_btn)
         hbox.addWidget(home_btn)  # Home button goes first
         hbox.addWidget(clear_btn)
+        hbox.addWidget(self.book_combo_box)  # Add ComboBox for books
 
         # Add the horizontal layout to the vertical layout
         vbox.addLayout(hbox)
@@ -55,16 +71,14 @@ class BibleApp(QWidget):
         self.result_area.setReadOnly(True)
         vbox.addWidget(self.result_area)
 
-        try:
-            with open("genesis.txt", "r") as f:
-                genesis_content = f.read()
-            self.result_area.setText(genesis_content)  # Display content of genesis.txt
-        except FileNotFoundError:
-            self.result_area.setText("Genesis file not found.")
-
-
         # Set the main layout for the window
         self.setLayout(vbox)
+
+    def populate_combo_box(self):
+        """Populate the ComboBox with book names (no file extensions, capitalized, no underscores)."""
+        for file in bible_text_files:
+            book_name = self.clean(file)
+            self.book_combo_box.addItem(book_name)
 
     def on_search(self):
         """Handle search button click."""
@@ -86,6 +100,16 @@ class BibleApp(QWidget):
             self.result_area.setText(genesis_content)  # Display content of genesis.txt
         except FileNotFoundError:
             self.result_area.setText("Genesis file not found.")
+
+    def on_book_select(self):
+        """Handle book selection from the ComboBox."""
+        selected_book = self.book_combo_box.currentText().lower() + ".txt"
+        try:
+            with open(selected_book, "r") as f:
+                content = f.read()
+            self.result_area.setText(content)  # Display content of the selected book
+        except FileNotFoundError:
+            self.result_area.setText(f"{selected_book} file not found.")
 
     def linear_search(self, searchkey):
         """Perform a linear search for verses containing the search keyword."""

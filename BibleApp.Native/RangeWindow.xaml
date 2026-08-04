@@ -1,0 +1,63 @@
+<Window x:Class="BibleApp.Native.RangeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="select range to search"
+        Icon="Assets/blackbible.ico"
+        Width="400" Height="330"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <StackPanel Margin="16">
+        <TextBlock Style="{StaticResource ToolbarLabel}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12"
+                   Text="Select the books of the Bible to search in."/>
+
+        <TextBlock Style="{StaticResource ToolbarLabel}" Text="starting book:"/>
+        <ComboBox x:Name="StartCombo"
+                  Style="{StaticResource ThemedCombo}"
+                  Margin="0,4,0,12"
+                  MaxDropDownHeight="240"
+                  SelectionChanged="Combo_SelectionChanged"/>
+
+        <TextBlock Style="{StaticResource ToolbarLabel}" Text="ending book:"/>
+        <ComboBox x:Name="EndCombo"
+                  Style="{StaticResource ThemedCombo}"
+                  Margin="0,4,0,12"
+                  MaxDropDownHeight="240"
+                  SelectionChanged="Combo_SelectionChanged"/>
+
+        <!-- Replaces the original's silent-until-you-submit popups: the problem is
+             stated as soon as it exists, and "set range" stays disabled until fixed. -->
+        <TextBlock x:Name="ValidationMessage"
+                   Style="{StaticResource ToolbarLabel}"
+                   TextWrapping="Wrap"
+                   MinHeight="34"
+                   FontStyle="Italic"
+                   Text=""/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,4,0,0">
+            <Button x:Name="SetRangeButton"
+                    Style="{StaticResource FlatButton}"
+                    Content="set range"
+                    Margin="0,0,8,0"
+                    IsDefault="True"
+                    Click="SetRange_Click"/>
+            <Button Style="{StaticResource FlatButton}"
+                    Content="reset to default"
+                    Click="Reset_Click"/>
+            <Button Style="{StaticResource FlatButton}"
+                    Content="cancel"
+                    IsCancel="True"/>
+        </StackPanel>
+
+        <TextBlock Style="{StaticResource ToolbarLabel}"
+                   TextWrapping="Wrap"
+                   Margin="0,12,0,0"
+                   FontSize="13"
+                   Text="Searches stay inside this range until you change it."/>
+    </StackPanel>
+</Window>

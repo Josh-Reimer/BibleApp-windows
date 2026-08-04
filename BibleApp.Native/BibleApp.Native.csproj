@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>BibleApp.Native</RootNamespace>
+    <AssemblyName>BibleApp</AssemblyName>
+    <ApplicationIcon>Assets\blackbible.ico</ApplicationIcon>
+
+    <Version>2.0.0</Version>
+    <Product>Desktop Bible</Product>
+    <Company>Josh Reimer</Company>
+
+    <!-- Trimming is off: WPF does not support it, and the app is I/O bound anyway. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Remove-then-include so this is correct whether or not the SDK's default
+         globs already picked these up as Resource items. -->
+    <Resource Remove="Assets\**" />
+    <Resource Include="Assets\blackbible.ico" />
+    <Resource Include="Assets\home.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      The KJV text files live at the repository root and are copied next to the exe.
+
+      Excluded:
+        Bible.txt                  - 4.3 MB concatenation of all 66 books. The whole-Bible
+                                     view is now assembled from the individual books, so
+                                     shipping it would duplicate the entire corpus.
+        bibleSearchResult.txt      - scratch file the Python version wrote results into.
+        *thessalonians / philippians - correctly spelled duplicates of files the canonical
+                                     list refers to by their misspelled names.
+    -->
+    <Content Include="..\*.txt"
+             Exclude="..\Bible.txt;..\bibleSearchResult.txt;..\philippians.txt;..\first_thessalonians.txt;..\second_thessalonians.txt">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,167 @@
+<Window x:Class="BibleApp.Native.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:BibleApp.Native.Controls"
+        Title="Desktop Bible"
+        Icon="Assets/blackbible.ico"
+        Width="1000" Height="700"
+        MinWidth="720" MinHeight="420"
+        WindowState="Maximized"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+
+    <Window.InputBindings>
+        <KeyBinding Key="F" Modifiers="Ctrl" Command="{x:Static ApplicationCommands.Find}"/>
+        <KeyBinding Key="OemPlus" Modifiers="Ctrl" Command="{x:Static NavigationCommands.IncreaseZoom}"/>
+        <KeyBinding Key="Add" Modifiers="Ctrl" Command="{x:Static NavigationCommands.IncreaseZoom}"/>
+        <KeyBinding Key="OemMinus" Modifiers="Ctrl" Command="{x:Static NavigationCommands.DecreaseZoom}"/>
+        <KeyBinding Key="Subtract" Modifiers="Ctrl" Command="{x:Static NavigationCommands.DecreaseZoom}"/>
+        <KeyBinding Key="Home" Modifiers="Ctrl" Command="{x:Static NavigationCommands.GoToPage}"/>
+    </Window.InputBindings>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static ApplicationCommands.Find}" Executed="FocusSearch_Executed"/>
+        <CommandBinding Command="{x:Static NavigationCommands.IncreaseZoom}" Executed="IncreaseFont_Executed"/>
+        <CommandBinding Command="{x:Static NavigationCommands.DecreaseZoom}" Executed="DecreaseFont_Executed"/>
+        <CommandBinding Command="{x:Static NavigationCommands.GoToPage}" Executed="Home_Executed"/>
+    </Window.CommandBindings>
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ============ Toolbar: same controls, same order as the original ============ -->
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>   <!-- label            -->
+                <ColumnDefinition Width="*"/>      <!-- search input     -->
+                <ColumnDefinition Width="Auto"/>   <!-- clear            -->
+                <ColumnDefinition Width="Auto"/>   <!-- home             -->
+                <ColumnDefinition Width="Auto"/>   <!-- SEARCH           -->
+                <ColumnDefinition Width="Auto"/>   <!-- result counter   -->
+                <ColumnDefinition Width="Auto"/>   <!-- book / chap / vs -->
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Style="{StaticResource ToolbarLabel}"
+                       Text="enter search keywords:"
+                       ToolTip="enter search keywords to search entire bible"/>
+
+            <TextBox x:Name="SearchBox"
+                     Grid.Column="1"
+                     Style="{StaticResource SearchBox}"
+                     MinWidth="180"
+                     KeyDown="SearchBox_KeyDown">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="copy" Click="SearchCopy_Click"/>
+                        <MenuItem Header="paste" Click="SearchPaste_Click"/>
+                        <Separator/>
+                        <MenuItem Header="search range" Click="SearchRange_Click"/>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
+
+            <Button x:Name="ClearButton"
+                    Grid.Column="2"
+                    Style="{StaticResource FlatButton}"
+                    Content="clear"
+                    ToolTip="clear search bar"
+                    Click="Clear_Click"/>
+
+            <Button x:Name="HomeButton"
+                    Grid.Column="3"
+                    Style="{StaticResource IconButton}"
+                    ToolTip="home — show the whole Bible (Ctrl+Home)"
+                    Click="Home_Click">
+                <Image Source="Assets/home.png" Stretch="Uniform"/>
+            </Button>
+
+            <Button x:Name="SearchButton"
+                    Grid.Column="4"
+                    Style="{StaticResource FlatButton}"
+                    Content="SEARCH"
+                    ToolTip="search keyword"
+                    Click="Search_Click"/>
+
+            <TextBox x:Name="CounterBox"
+                     Grid.Column="5"
+                     Style="{StaticResource CounterBox}"
+                     Width="300"
+                     Text="No search results yet"/>
+
+            <StackPanel Grid.Column="6" Orientation="Horizontal">
+                <ComboBox x:Name="BookCombo"
+                          Style="{StaticResource ThemedCombo}"
+                          Width="170"
+                          ToolTip="choose book of Bible to be displayed"
+                          SelectionChanged="BookCombo_SelectionChanged"/>
+                <ComboBox x:Name="ChapterCombo"
+                          Style="{StaticResource ThemedCombo}"
+                          Width="62"
+                          ToolTip="choose chapter from selected book at left to be displayed"
+                          SelectionChanged="ChapterCombo_SelectionChanged"/>
+                <ComboBox x:Name="VerseCombo"
+                          Style="{StaticResource ThemedCombo}"
+                          Width="62"
+                          ToolTip="choose verse from chapter of book selected at left to be displayed"
+                          SelectionChanged="VerseCombo_SelectionChanged"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ============ Reading pane ============ -->
+        <Grid Grid.Row="1">
+            <ListBox x:Name="VerseList"
+                     Style="{StaticResource VerseList}"
+                     ItemContainerStyle="{StaticResource VerseItem}"
+                     MouseDoubleClick="VerseList_MouseDoubleClick">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="copy" Click="CopyVerse_Click"/>
+                        <MenuItem Header="copy with reference" Click="CopyVerseWithReference_Click"/>
+                        <Separator/>
+                        <MenuItem Header="larger text" InputGestureText="Ctrl++" Click="IncreaseFont_Click"/>
+                        <MenuItem Header="smaller text" InputGestureText="Ctrl+-" Click="DecreaseFont_Click"/>
+                        <Separator/>
+                        <MenuItem Header="theme">
+                            <MenuItem x:Name="ThemeGreen" Header="green (classic)" IsCheckable="True"
+                                      Click="Theme_Click" Tag="Green"/>
+                            <MenuItem x:Name="ThemeDarkGray" Header="dark gray" IsCheckable="True"
+                                      Click="Theme_Click" Tag="DarkGray"/>
+                            <MenuItem x:Name="ThemeDarkAmber" Header="dark amber" IsCheckable="True"
+                                      Click="Theme_Click" Tag="DarkAmber"/>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="search range" Click="SearchRange_Click"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock TextWrapping="Wrap"
+                                   FontFamily="{StaticResource MonoFont}"
+                                   FontSize="{Binding DataContext.ReadingFontSize,
+                                              RelativeSource={RelativeSource AncestorType=Window}}"
+                                   Foreground="{DynamicResource InputTextBrush}"
+                                   ctl:VerseTextBehavior.Reference="{Binding Reference}"
+                                   ctl:VerseTextBehavior.Text="{Binding Text}"
+                                   ctl:VerseTextBehavior.Highlight="{Binding Highlight}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Shown while the 66 text files are parsed on a background thread. -->
+            <Border x:Name="LoadingOverlay"
+                    Background="{DynamicResource WindowBackgroundBrush}"
+                    Visibility="Visible">
+                <TextBlock Text="Loading the Bible…"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontFamily="{StaticResource UiFont}" FontSize="20"
+                           Foreground="{DynamicResource TextBrush}"/>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

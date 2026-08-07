@@ -90,10 +90,43 @@ to the data or to the parsing rules has to be deliberate rather than silent.
 
 ## Distribution
 
-Shipped as a PyInstaller exe wrapped in an Inno Setup installer. The `.iss` script is not in
-this repo. Two things matter if you touch it: keep `AppId` constant across versions or
-installs stack up instead of upgrading, and prefer a per-user install
-(`PrivilegesRequired=lowest` with `{autopf}`) so updates apply without a UAC prompt.
+The Python version shipped as a PyInstaller exe wrapped in an Inno Setup installer whose
+`.iss` was never in this repo.
+
+The WPF version has one: `BibleApp.Native/Installer/BibleApp.iss`. Publish first, then
+compile — the script reads the version out of the published exe:
+
+```
+cd BibleApp.Native
+dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+iscc /DArch=x64 Installer\BibleApp.iss
+```
+
+Output lands in `dist-installer/`. Use `-r win-arm64` with `/DArch=arm64` for ARM64 Windows.
+A self-contained WPF build is about 134 MB, compressing to a ~36 MB installer; WPF cannot be
+trimmed, so that floor is not going anywhere.
+
+Four things in that script are load-bearing:
+
+- **`AppId` must never change.** It is what makes a later install an upgrade instead of a
+  second entry in Add/Remove Programs.
+- **The install is per-user** (`PrivilegesRequired=lowest` with `{autopf}`, landing in
+  `%LocalAppData%\Programs\BibleApp`), so updates apply with no UAC prompt. A prompt on
+  every update is a prompt people learn to cancel. `/ALLUSERS` overrides it.
+- **`<Version>` in the .csproj is the single source of truth.** The `.iss` reads it back out
+  of the compiled exe rather than keeping its own copy. Two copies drift, and an updater
+  comparing the running assembly's version against the published release then either never
+  updates or updates forever.
+- **`CloseApplications=yes`** lets Restart Manager shut a running copy down before
+  overwriting it. Verified: a running instance is closed by a silent upgrade.
+
+For an auto-updater, invoke it as
+`BibleApp-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /relaunch=yes` — the
+`/relaunch=yes` parameter is handled in the script's `[Code]` section and brings the app
+back up afterwards. A plain silent install stays quiet.
+
+Not yet done: code signing. Unsigned, both the installer and an updater downloading it will
+hit SmartScreen, and reputation resets with each new build.
 
 ## Conventions
 

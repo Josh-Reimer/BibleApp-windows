@@ -30,7 +30,13 @@ public static class ThemeManager
 
     public static void Apply(Theme theme)
     {
-        var uri = new Uri($"Themes/{theme}.xaml", UriKind.Relative);
+        // A relative URI resolves against the entry assembly, which is only this one when
+        // the app is launched normally — it breaks the moment anything else hosts these
+        // windows. Name the assembly holding the dictionaries explicitly.
+        var assembly = typeof(ThemeManager).Assembly.GetName().Name;
+        var uri = new Uri(
+            $"pack://application:,,,/{assembly};component/Themes/{theme}.xaml",
+            UriKind.Absolute);
         var dictionary = new ResourceDictionary { Source = uri };
 
         // Index 0 by convention — see App.xaml.

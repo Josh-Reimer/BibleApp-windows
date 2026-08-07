@@ -1,14 +1,18 @@
 # CLAUDE.md
 
-Desktop KJV Bible reader with keyword search. Two implementations live side by side:
+Desktop KJV Bible reader with keyword search. **Which language you are looking at depends on
+the branch:**
 
-| | |
+| Branch | Source |
 |---|---|
-| **Python / PySimpleGUI** (repo root) | The original. `bibleGUI.py` is the GUI, `connector.py` the command-line version. |
-| **C# / WPF** (`BibleApp.Native/`) | Native Windows port on the `native-wpf` branch. See its own README for the porting notes. |
-| **Tests** (`BibleApp.Tests/`) | xUnit, covering the parser, the data defects below, and search. |
+| `main` | **Python only.** The original: `bibleGUI.py` is the GUI, `connector.py` the command-line version. |
+| `native-wpf` | **Both.** The Python original is untouched at the repo root, and a C# / WPF port sits alongside it in `BibleApp.Native/`, with xUnit tests in `BibleApp.Tests/`. |
 
-Both read the same 66 `.txt` files at the repository root.
+`BibleApp.Native/` and `BibleApp.Tests/` therefore do not exist on `main` — check the branch
+before concluding a path is missing. The C# port is the one that currently has an installer;
+`BibleApp.Native/README.md` covers what the port kept, what it changed, and why.
+
+Both implementations read the same 66 `.txt` files at the repository root.
 
 ## The data files
 
@@ -72,6 +76,10 @@ dotnet build
 dotnet run
 ```
 
+Startup parses all 66 files into memory in roughly 300 ms; searches then run in single-digit
+milliseconds. If either number moves by an order of magnitude, something has regressed to
+per-search file I/O — which is what the Python version did.
+
 Self-contained single-file publish:
 
 ```
@@ -85,8 +93,10 @@ links the parser and search in as source rather than referencing the WPF assembl
 run anywhere the SDK does. Nothing under `Models/` or `Services/SearchService.cs` touches
 WPF; keep it that way, or the tests get pinned to Windows along with the app.
 
-`DataDefectTests` is the important one — it pins each of the four defects below, so a change
-to the data or to the parsing rules has to be deliberate rather than silent.
+`DataDefectTests` is the important one — it pins each of the four data defects described
+above, so a change to the data or to the parsing rules has to be deliberate rather than
+silent. It also asserts that 2 Corinthians 1 is the *only* chapter in all 66 books with a
+numbering gap.
 
 ## Distribution
 

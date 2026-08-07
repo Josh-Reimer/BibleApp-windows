@@ -6,6 +6,7 @@ Desktop KJV Bible reader with keyword search. Two implementations live side by s
 |---|---|
 | **Python / PySimpleGUI** (repo root) | The original. `bibleGUI.py` is the GUI, `connector.py` the command-line version. |
 | **C# / WPF** (`BibleApp.Native/`) | Native Windows port on the `native-wpf` branch. See its own README for the porting notes. |
+| **Tests** (`BibleApp.Tests/`) | xUnit, covering the parser, the data defects below, and search. |
 
 Both read the same 66 `.txt` files at the repository root.
 
@@ -76,6 +77,16 @@ Self-contained single-file publish:
 ```
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
+
+**Tests.** `cd BibleApp.Tests && dotnet test` — 53 xUnit tests, about half a second.
+
+Unlike the app, these are **not** Windows-only. The test project targets plain `net9.0` and
+links the parser and search in as source rather than referencing the WPF assembly, so they
+run anywhere the SDK does. Nothing under `Models/` or `Services/SearchService.cs` touches
+WPF; keep it that way, or the tests get pinned to Windows along with the app.
+
+`DataDefectTests` is the important one — it pins each of the four defects below, so a change
+to the data or to the parsing rules has to be deliberate rather than silent.
 
 ## Distribution
 

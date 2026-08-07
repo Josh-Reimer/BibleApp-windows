@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <!--
+    The parser and search are linked in as source rather than reached through a
+    ProjectReference. BibleApp.Native is a WinExe targeting net9.0-windows with UseWPF,
+    so referencing it would pin these tests to Windows. Neither Models nor SearchService
+    touches WPF, so compiling them into a plain net9.0 test assembly lets `dotnet test`
+    run on macOS and Linux — which matters, because the app itself only builds on Windows.
+
+    The trade is that these tests exercise a recompilation of the source, not the shipped
+    binary. For a text parser that distinction is immaterial. If BibleApp.Native ever grows
+    a genuine class library, point this at that instead.
+  -->
+  <ItemGroup>
+    <Compile Include="..\BibleApp.Native\Models\*.cs">
+      <Link>Linked\Models\%(Filename)%(Extension)</Link>
+    </Compile>
+    <Compile Include="..\BibleApp.Native\Services\SearchService.cs">
+      <Link>Linked\Services\%(Filename)%(Extension)</Link>
+    </Compile>
+  </ItemGroup>
+
+</Project>

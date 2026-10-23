@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace BibleApp.Native.Models;
 
 /// <summary>
@@ -10,6 +12,10 @@ public sealed class Verse
     public required int Chapter { get; init; }
     public required int Number { get; init; }
     public required string Text { get; init; }
+
+    /// <summary>Parts of <see cref="Text"/> that are the words of Christ, shown in red.
+    /// Empty for most verses; filled in at load time by <see cref="RedLetter.Apply"/>.</summary>
+    public IReadOnlyList<TextSpan> WordsOfChrist { get; internal set; } = [];
 
     /// <summary>e.g. "Genesis 1:1" — used for the reference gutter and clipboard.</summary>
     public string Reference => $"{Book.DisplayName} {Chapter}:{Number}";

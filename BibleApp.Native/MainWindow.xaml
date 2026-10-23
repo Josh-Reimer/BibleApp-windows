@@ -148,7 +148,8 @@
                                    Foreground="{DynamicResource InputTextBrush}"
                                    ctl:VerseTextBehavior.Reference="{Binding Reference}"
                                    ctl:VerseTextBehavior.Text="{Binding Text}"
-                                   ctl:VerseTextBehavior.Highlight="{Binding Highlight}"/>
+                                   ctl:VerseTextBehavior.Highlight="{Binding Highlight}"
+                                   ctl:VerseTextBehavior.WordsOfChrist="{Binding WordsOfChrist}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

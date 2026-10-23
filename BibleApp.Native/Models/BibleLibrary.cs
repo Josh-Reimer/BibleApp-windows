@@ -88,6 +88,8 @@ public sealed class BibleLibrary
                 $"No Bible text files were found in \"{dataDir}\". The .txt files must sit " +
                 "beside the executable, or in a \"Data\" folder next to it.");
 
+        RedLetter.Apply(books, Path.Combine(dataDir, RedLetter.FileName));
+
         return new BibleLibrary { Books = books, AllVerses = allVerses };
     }
 

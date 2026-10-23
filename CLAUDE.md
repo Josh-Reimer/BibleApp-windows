@@ -86,7 +86,7 @@ Self-contained single-file publish:
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
-**Tests.** `cd BibleApp.Tests && dotnet test` — 53 xUnit tests, about half a second.
+**Tests.** `cd BibleApp.Tests && dotnet test` — 59 xUnit tests, about half a second.
 
 Unlike the app, these are **not** Windows-only. The test project targets plain `net9.0` and
 links the parser and search in as source rather than referencing the WPF assembly, so they
@@ -97,6 +97,10 @@ WPF; keep it that way, or the tests get pinned to Windows along with the app.
 above, so a change to the data or to the parsing rules has to be deliberate rather than
 silent. It also asserts that 2 Corinthians 1 is the *only* chapter in all 66 books with a
 numbering gap.
+
+### Red letters (WPF only)
+
+`red_letter_kjv.json` at the repo root is copied verbatim from the Bible-Verse Android app: `"bookIndex:chapter:verse"` (index into `BibleLibrary.CanonicalFiles`) → the verse with the words of Christ wrapped in `<font color="#CC0000">`. `RedLetter.Apply` runs at the end of `BibleLibrary.Load` and sets `Verse.WordsOfChrist` (character spans in `Verse.Text`), skipping any entry whose text isn't the parsed verse exactly. `VerseTextBehavior` cuts each verse into runs wherever a red span or search highlight starts or stops, colouring with the theme's `WordsOfChristBrush`. `RedLetterTests` pins that all 2027 entries land. The Python version on `main` has no red letters.
 
 ## Distribution
 

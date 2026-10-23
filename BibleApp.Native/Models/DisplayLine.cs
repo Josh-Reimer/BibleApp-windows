@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace BibleApp.Native.Models;
 
 /// <summary>
@@ -16,6 +18,9 @@ public sealed class DisplayLine
     public string Highlight { get; init; } = string.Empty;
 
     public Verse? Verse { get; init; }
+
+    /// <summary>Red-letter spans within <see cref="Text"/>; empty for heading lines.</summary>
+    public IReadOnlyList<TextSpan> WordsOfChrist => Verse?.WordsOfChrist ?? [];
 
     public static DisplayLine Heading(string text) => new() { Text = text };
 

@@ -24,6 +24,7 @@
     <SolidColorBrush x:Key="BorderBrush" Color="#555555"/>
     <SolidColorBrush x:Key="VerseReferenceBrush" Color="#8A8A8A"/>
     <SolidColorBrush x:Key="HighlightBrush" Color="#7A6320"/>
+    <SolidColorBrush x:Key="WordsOfChristBrush" Color="#F47067"/>
     <SolidColorBrush x:Key="SelectionBrush" Color="#454545"/>
 
 </ResourceDictionary>
